@@ -211,7 +211,7 @@ docker run -dt --name=shadowsocks -p 1080：1080 -p 8123:8123 -p 7777:7777 -e SS
 # 使用docker-compose简化操作
 上文中无论启动ss服务还是启动ss客户端都使用的是 命令行模式，这种模式我们不仅要输入一大串参数或环境变量，而且给快速部署带来不变，所幸我们可以将这些复杂的参数或环境变量写进配置文件，然后使用docker-compse从配置文件中自动加载这些设置。
 
-上文的服务端启动代码我们可以用以下三种方式写进 docker-compose.yaml 效果是一样的。
+上文的客户端启动代码我们可以用以下三种方式写进 docker-compose.yaml 效果是一样的。
 
 <pre><code>
 # 方式一
@@ -263,3 +263,6 @@ Docker化的服务能够实现轻松复制，使用上文的代理服务我们�
 ![](http://www.haproxy.org/img/logo-med.png)
 
 docke-compose.yaml.sample 和 haproxy/haproxy.cfg  给出了一个结合本项目和Haproxy的多代理路由示例。
+在示例中我们使用上节中三种不同的docker-compose配置方式启动了三个一模一样的代理服务客户端，并使用Haproxy路由。
+
+再次强调端口问题，polipo和cow默认运行在8123和7777端口，这个在 docke-compose.yaml.sample 和 haproxy/haproxy.cfg 可以不用更改，除非使用了别的设置；ss的常规运行端口是 1080，用户可以在启动服务时在 -s 参数中指定别的端口，响应地在 docke-compose.yaml.sample 和 haproxy/haproxy.cfg 文件中要进行更改。
