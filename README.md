@@ -1,4 +1,4 @@
-## 基本描述
+# 基本描述
 
 本项目在Shadowsocks的基础上同时封装了polipo服务和 cow 服务， 并使用kcptun加速。  
 
@@ -62,9 +62,9 @@ Cow提供一种无缓存的多代理解决方案，支持条件转发，cow将�
 <small><i style="color:red">注意： socks5协议的 ss 代理只有当 shadowsocks 参数中指定了 ”-b 0.0.0.0“ 才可用！</i></small>
 
 *****
-## 搭建代理服务
+# 搭建代理服务
 使用本项目搭建代理服务非常简单，故简单带过，本节主要讨论启动代理服务的注意事项。
-#### <strong>构建Docker镜像:</strong>
+## <strong>构建Docker镜像:</strong>
 由于本项目目前尚未上传到Docker服务仓储中备份，用户需要自行编译Docker镜像，步骤如下：
 1. 下载项目中的Dockerfile配置文件和enterpoint.sh脚本文件
 <pre><code>
@@ -81,7 +81,7 @@ cd shadowsocks-libev
 docker build -t $NAME:$TAG .
 </code></pre>
 
-#### <strong>启动代理服务:</strong>
+## <strong>启动代理服务:</strong>
 编译的Docker镜像中包含了Shadowsocks，polipo，cow服务和kcptun加速服务。 镜像使用 entrypoint.sh 脚本作为启动脚本，该脚本负责按参数启动各项服务，我们只要使用正确、合法的参数构建镜像的Container并启动它就可以轻松启动代理服务。  
 
 代理服务正确打开姿势
@@ -126,3 +126,31 @@ docker run --name=shadowsocks $NAME:$TAG -m $SS_MODULE -s $SS_COFIG -k $KCP_CONF
 
 
 命令示例：
+<strong>服务端</strong>
+假设服务端的网址或域名是 ss.example.org
+<pre><code>
+docker run -dt --name=shadowsocks -p 6443:6443 -p 6500:6500/udp $NAME:$TAG -s "-s :: -s 0.0.0.0 -p 6443 -m aes-256-cfb -k test123 --fast-open" -k "-t 127.0.0.1:6443 -l :6500 -mode fast2" -x
+</code></pre>
+相当于执行了下面命令：
+<pre><code>
+ss-server -s :: -s 0.0.0.0 -p 6443 -m aes-256-cfb -k test123 --fast-open
+kcp-server -t 127.0.0.1:6443 -l :6500 -mode fast2
+</code></pre>
+ss运行在6443端口； kcp-server为ss构建了加速通道，运行在6500端口。此时服务端准备好了。如果不想开启kcp加速，删除 -k和-x参数即可。
+
+<strong>客户端</strong>
+<pre><code>
+docker run -dt --name=shadowsocks -p 1080：1080 -p 8123:8123 -p 7777:7777 $NAME:$TAG -m "ss-local" -s "-s 127.0.0.1 -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open" -k "-r ss.example.org:6500 -l :6443 -mode fast2" -x
+</code></pre>
+相当于执行了下面命令：
+<pre><code>
+ss-local -s 127.0.0.1 -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open
+kcp-client -r ss.example.org:6500 -l :6443 -mode fast2
+</code></pre>
+这样就和ss服务端通过kcp建立了快速通道，同时内部还启动了polipo和cow，分别监听8123端口和7777端口实现代理转发，kcp的基本原理如下图：
+![kcptun原理示意图](https://github.com/xtaci/kcptun/raw/master/kcptun.png)
+如果ss服务端没有开启kcptun服务或不想使用kcptun加速服务，可使用
+<pre><code>
+docker run -dt --name=shadowsocks -p 1080：1080 -p 8123:8123 -p 7777:7777 $NAME:$TAG -m "ss-local" -s "-s ss.example.org -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open"
+</code></pre>
+直接同ss服务端的ss-server建立连接。<i>注意这里的监听ip和端口的变化</i>。
