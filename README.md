@@ -1,5 +1,9 @@
 ## 基本描述
-本项目同时封装了 shadowsocks-libev 服务、polipo服务和 cow 服务。
+本项目在Shadowsocks的基础上同时封装了polipo服务和 cow 服务。  
+
+Polipo将Shadowsocks提供的socks5协议代理转成http代理，满足不支持socks5协议的场合，如 shell环境中    
+
+Cow提供一种无缓存的多代理解决方案，支持条件转发，cow将所有代理请求按条件转发到其他代理服务。Cow对外提供的也是http代理。
 <table>
   <tbody>
     <thead>
