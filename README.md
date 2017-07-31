@@ -259,4 +259,4 @@ shadowsocks:
 
 # 多代理使用 Haproxy 路由
 Docker化的服务能够实现轻松复制，使用上文的代理服务我们可以用不同的参数启多个本地代理，甚至可以使用相同的参数（注意端口冲突）开启多个配置相同的本地代理。在多代理的环境下，手动在代理间切换是个很不人性化的工作。Hapxory 提供了多代理路由的解决方案，能轻松实现多代理路由并能平衡代理负载。
-!(http://www.haproxy.org/img/logo-med.png)
+![](http://www.haproxy.org/img/logo-med.png)
