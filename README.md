@@ -208,7 +208,7 @@ docker run -dt --name=shadowsocks -p 6443:6443 -p 6500:6500/udp  -e SS_CONFIG="-
 docker run -dt --name=shadowsocks -p 1080：1080 -p 8123:8123 -p 7777:7777 -e SS_CONFIG="ss-local" -s "-s 127.0.0.1 -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open" -e KCP_CONFIG="-r ss.example.org:6500 -l :6443 -mode fast2" -e KCP_FLAG="true" $NAME:$TAG
 </code></pre>
 
-## 使用docker-compose简化操作
+# 使用docker-compose简化操作
 上文中无论启动ss服务还是启动ss客户端都使用的是 命令行模式，这种模式我们不仅要输入一大串参数或环境变量，而且给快速部署带来不变，所幸我们可以将这些复杂的参数或环境变量写进配置文件，然后使用docker-compse从配置文件中自动加载这些设置。
 
 上文的服务端启动代码我们可以用以下三种方式写进 docker-compose.yaml 效果是一样的。
@@ -256,3 +256,7 @@ shadowsocks:
 </code></pre>
 
 然后使用 docker-compose up 运行container 或添加 -d 参数使其运行在后台。
+
+# 多代理使用 Haproxy 路由
+Docker化的服务能够实现轻松复制，使用上文的代理服务我们可以用不同的参数启多个本地代理，甚至可以使用相同的参数（注意端口冲突）开启多个配置相同的本地代理。在多代理的环境下，手动在代理间切换是个很不人性化的工作。Hapxory 提供了多代理路由的解决方案，能轻松实现多代理路由并能平衡代理负载。
+!(http://www.haproxy.org/img/logo-med.png)
