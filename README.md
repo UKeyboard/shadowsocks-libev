@@ -125,8 +125,10 @@ docker run --name=shadowsocks $NAME:$TAG -m $SS_MODULE -s $SS_COFIG -k $KCP_CONF
 </table>
 
 
-使用启动参数的命令示例：
-<strong>Server服务端</strong>
+使用启动参数的命令示例：  
+
+<strong>Server服务端</strong>  
+
 假设服务端的网址或域名是 ss.example.org
 <pre><code>
 docker run -dt --name=shadowsocks -p 6443:6443 -p 6500:6500/udp $NAME:$TAG -s "-s :: -s 0.0.0.0 -p 6443 -m aes-256-cfb -k test123 --fast-open" -k "-t 127.0.0.1:6443 -l :6500 -mode fast2" -x
@@ -193,7 +195,9 @@ docker run -dt --name=shadowsocks -p 1080：1080 -p 8123:8123 -p 7777:7777 $NAME
       </tbody>
 </table>
 环境变量与启动参数一一对应，但启动参数相对环境变量具有更高的优先级，也就是说同时指定环境变量和启动参数的情况下将以启动参数为准，环境变量会被屏蔽。
+
 上文使用启动参数示例换成使用环境变量后命令如下：
+
 <strong>Server服务端</strong>
 <pre><code>
 docker run -dt --name=shadowsocks -p 6443:6443 -p 6500:6500/udp  -e SS_CONFIG="-s :: -s 0.0.0.0 -p 6443 -m aes-256-cfb -k test123 --fast-open" -e KCP_CONFIG="-t 127.0.0.1:6443 -l :6500 -mode fast2" -e KCP_FLAG="true" $NAME:$TAG
