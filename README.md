@@ -1,5 +1,6 @@
 ## 基本描述
-本项目在Shadowsocks的基础上同时封装了polipo服务和 cow 服务。  
+
+本项目在Shadowsocks的基础上同时封装了polipo服务和 cow 服务， 并使用kcptun加速。  
 
 Polipo将Shadowsocks提供的socks5协议代理转成http代理，满足不支持socks5协议的场合，如 shell环境中    
 
@@ -60,9 +61,10 @@ Cow提供一种无缓存的多代理解决方案，支持条件转发，cow将�
 </table>
 <small><i style="color:red">注意： socks5协议的 ss 代理只有当 shadowsocks 参数中指定了 ”-b 0.0.0.0“ 才可用！</i></small>
 
+*****
 ## 搭建代理服务
 使用本项目搭建代理服务非常简单，故简单带过，本节主要讨论启动代理服务的注意事项。
-#### 构建Docker镜像
+#### <strong>构建Docker镜像</strong>
 由于本项目目前尚未上传到Docker服务仓储中备份，用户需要自行编译Docker镜像，步骤如下：
 1. 下载项目中的Dockerfile配置文件和enterpoint.sh脚本文件
 <pre><code>
@@ -71,6 +73,17 @@ wget -sSLO https://raw.githubusercontent.com/UKeyboard/shadowsocks-libev/master/
 </code></pre>
 或直接 clone 本项目：
 <pre><code>
-git clone 
+git clone https://github.com/UKeyboard/shadowsocks-libev.git
 cd shadowsocks-libev
 </code></pre>
+2. 编译Docker镜像
+<pre><code>
+docker build -t $NAME:$TAG .
+</code></pre>
+
+#### <strong>启动代理服务</strong>
+编译的Docker镜像中包含了Shadowsocks，polipo，cow服务和kcptun加速服务。 镜像使用 entrypoint.sh 脚本作为启动脚本，该脚本负责按参数启动各项服务，我们只要使用正确、合法的参数构建镜像的Container并启动它就可以轻松启动代理服务。  
+
+<strong>代理服务正确打开姿势：</strong>  
+
+
