@@ -88,7 +88,7 @@ docker build -t $NAME:$TAG .
 <pre><code>
 docker run --name=shadowsocks $NAME:$TAG -m $SS_MODULE -s $SS_COFIG -k $KCP_CONFIG -x -v
 </code></pre>
-其中：
+其中 -skmxv 为启动参数：
 <table>
       <thead>
             <th>参数名称</th>
@@ -125,8 +125,8 @@ docker run --name=shadowsocks $NAME:$TAG -m $SS_MODULE -s $SS_COFIG -k $KCP_CONF
 </table>
 
 
-命令示例：
-<strong>服务端</strong>
+使用启动参数的命令示例：
+<strong>Server服务端</strong>
 假设服务端的网址或域名是 ss.example.org
 <pre><code>
 docker run -dt --name=shadowsocks -p 6443:6443 -p 6500:6500/udp $NAME:$TAG -s "-s :: -s 0.0.0.0 -p 6443 -m aes-256-cfb -k test123 --fast-open" -k "-t 127.0.0.1:6443 -l :6500 -mode fast2" -x
@@ -138,7 +138,7 @@ kcp-server -t 127.0.0.1:6443 -l :6500 -mode fast2
 </code></pre>
 ss运行在6443端口； kcp-server为ss构建了加速通道，运行在6500端口。此时服务端准备好了。如果不想开启kcp加速，删除 -k和-x参数即可。
 
-<strong>客户端</strong>
+<strong>Client客户端</strong>
 <pre><code>
 docker run -dt --name=shadowsocks -p 1080：1080 -p 8123:8123 -p 7777:7777 $NAME:$TAG -m "ss-local" -s "-s 127.0.0.1 -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open" -k "-r ss.example.org:6500 -l :6443 -mode fast2" -x
 </code></pre>
@@ -154,3 +154,54 @@ kcp-client -r ss.example.org:6500 -l :6443 -mode fast2
 docker run -dt --name=shadowsocks -p 1080：1080 -p 8123:8123 -p 7777:7777 $NAME:$TAG -m "ss-local" -s "-s ss.example.org -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open"
 </code></pre>
 直接同ss服务端的ss-server建立连接。<i>注意这里的监听ip和端口的变化</i>。
+
+
+## 环境变量支持
+与启动参数 -skmxv 对应地本项目支持 SS_CONFIG，KCP_CONFIG，SS_MODULE，KCP_FLAG，DEBUG 五个环境变量。
+<table>
+      <thead>
+            <th>环境变量</th>
+            <th>作用</th>
+            <th>取值</th>
+      </thead>
+      <tbody>
+            <tr>
+                  <td>SS_CONFIG</td>
+                  <td>shadowsocks-libev 参数字符串</td>
+                  <td>同 -s 参数，支持所有 shadowsocks-libev 支持的选项参数</td>
+            </tr>
+            <tr>
+                  <td>KCP_CONFIG</td>
+                  <td>kcptun 参数字符串</td>
+                  <td>同 -k 参数，支持所有kcptun 支持的选项参数</td>
+            </tr>
+            <tr>
+                  <td>SS_MODULE</td>
+                  <td>shadowsocks 启动命令</td>
+                  <td>同 -m 参数，ss-local 或 ss-server</td>
+            </tr>
+            <tr>
+                  <td>KCP_FLAG</td>
+                  <td>是否开启 kcptun 支持</td>
+                  <td>效果同 -x参数，可选参数为 true 和 false，默认为 fasle 禁用 kcptun</td>
+            </tr>
+            <tr>
+                  <td>DEBUG</td>
+                  <td>是否输出debug信息</td>
+                  <td>效果同 -v参数，可选参数为 true 和 false，默认为 fasle 禁用 debug信息</td>
+            </tr>
+      </tbody>
+</table>
+环境变量与启动参数一一对应，但启动参数相对环境变量具有更高的优先级，也就是说同时指定环境变量和启动参数的情况下将以启动参数为准，环境变量会被屏蔽。
+上文使用启动参数示例换成使用环境变量后命令如下：
+<strong>Server服务端</strong>
+<pre><code>
+docker run -dt --name=shadowsocks -p 6443:6443 -p 6500:6500/udp  -e SS_CONFIG="-s :: -s 0.0.0.0 -p 6443 -m aes-256-cfb -k test123 --fast-open" -e KCP_CONFIG="-t 127.0.0.1:6443 -l :6500 -mode fast2" -e KCP_FLAG="true" $NAME:$TAG
+</code></pre>
+
+<strong>Client客户端</strong>
+<pre><code>
+docker run -dt --name=shadowsocks -p 1080：1080 -p 8123:8123 -p 7777:7777 -e SS_CONFIG="ss-local" -s "-s 127.0.0.1 -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open" -e KCP_CONFIG="-r ss.example.org:6500 -l :6443 -mode fast2" -e KCP_FLAG="true" $NAME:$TAG
+</code></pre>
+
+
