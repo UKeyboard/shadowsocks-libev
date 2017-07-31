@@ -1,1 +1,53 @@
 
+ss1:
+  image: $NAME:$TAG
+  command:
+    -s "-s 127.0.0.1 -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open"
+    -k "-r ss.example.org:6500 -l :6443 -mode fast2"
+    -x
+  expose:
+    - 1080
+    - 8123
+    - 7777
+  restart: always
+  
+
+ss2:
+  image: $NAME:$TAG
+  command: -s "-s 127.0.0.1 -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open" -k "-r ss.example.org:6500 -l :6443 -mode fast2" -x
+  expose:
+    - 1080
+    - 8123
+    - 7777
+  restart: always
+
+
+
+ss3:
+  image: $NAME:$TAG
+  environment:
+     - "SS_CONFIG=-s 127.0.0.1 -p 6443 -l 1080 -b 0.0.0.0 -m aes-256-cfb -k test123 --fast-open"
+     - "KCP_CONFIG=-r ss.example.org:6500 -l :6443 -mode fast2"
+     - KCP_FLAG=true
+  expose:
+    - 1080
+    - 8123
+    - 7777
+  restart: always
+
+
+hap:
+    image: ukeyboard/haproxy:alpine
+    volumes:
+        - ./haproxy:/haproxy-override
+        - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    links:
+        - ss1
+        - ss2
+        - ss3
+    ports:
+        - "1080:1080/tcp"
+        - "1080:1080/udp"
+        - "7777:7777"
+        - "8123:8123"
+        - "10086:10086"
