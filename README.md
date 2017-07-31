@@ -66,5 +66,11 @@ Cow提供一种无缓存的多代理解决方案，支持条件转发，cow将�
 由于本项目目前尚未上传到Docker服务仓储中备份，用户需要自行编译Docker镜像，步骤如下：
 1. 下载项目中的Dockerfile配置文件和enterpoint.sh脚本文件
 <pre><code>
-wget -sSLO 
+wget -sSLO https://raw.githubusercontent.com/UKeyboard/shadowsocks-libev/master/Dockerfile
+wget -sSLO https://raw.githubusercontent.com/UKeyboard/shadowsocks-libev/master/entrypoint.sh
+</code></pre>
+或直接 clone 本项目：
+<pre><code>
+git clone 
+cd shadowsocks-libev
 </code></pre>
