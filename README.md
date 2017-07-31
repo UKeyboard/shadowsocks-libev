@@ -58,4 +58,13 @@ Cow提供一种无缓存的多代理解决方案，支持条件转发，cow将�
     </tr>
   </tbody>
 </table>
-<i style="color:red">注意： socks5协议的 ss 代理只有当 shadowsocks 参数中指定了 ”-b 0.0.0.0“ 才可用！</i>
+<small><i style="color:red">注意： socks5协议的 ss 代理只有当 shadowsocks 参数中指定了 ”-b 0.0.0.0“ 才可用！</i></small>
+
+## 搭建代理服务
+使用本项目搭建代理服务非常简单，故简单带过，本节主要讨论启动代理服务的注意事项。
+#### 构建Docker镜像
+由于本项目目前尚未上传到Docker服务仓储中备份，用户需要自行编译Docker镜像，步骤如下：
+1. 下载项目中的Dockerfile配置文件和enterpoint.sh脚本文件
+<pre><code>
+wget -sSLO 
+</code></pre>
